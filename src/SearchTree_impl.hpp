@@ -83,7 +83,6 @@
 
 template<typename T>
 void SearchTree<T>::rotateLeft(Node* x) {
-	// pull right child up:
 	Node* y = x->right;
 	x->right = y->left;
 
@@ -103,12 +102,30 @@ void SearchTree<T>::rotateLeft(Node* x) {
 }
 
 template<typename T>
-void SearchTree<T>::insert(const T key) {
-	Node *const newNode = new Node(key);
-	newNode->left = nil;
-	newNode->right = nil;
+void SearchTree<T>::rotateRight(Node* x) {
+	Node* y = x->left;
+	x->left = y->right;
 
-	Node *aboveNew = nil; // Node under which newNode will be inserted
+	if(y->right != nil)
+		y->right->parent = x;
+	y->parent = x->parent;
+
+	if(x->parent == nil)
+		root = y;
+	else if(x == x->parent->right)
+		x->parent->right = y;
+	else
+		x->parent->left = y;
+
+	y->right = x;
+	x->parent = y;
+}
+
+template<typename T>
+void SearchTree<T>::insert(const T key) {
+	Node *const newNode = new Node(key); // "z"
+
+	Node *aboveNew = nil; // Node under which newNode will be inserted ("y")
 
 	for (Node *x = root; x != nil; ) {
 		aboveNew = x;
@@ -127,8 +144,56 @@ void SearchTree<T>::insert(const T key) {
 		aboveNew->left = newNode; // Insert newNode
 	else
 		aboveNew->right = newNode; // Insert newNode
+
+	newNode->left = nil;
+	newNode->right = nil;
+	newNode->color = Node::RED;
+
+	insertFixup(newNode);
 }
 
+template<typename T>
+void SearchTree<T>::insertFixup(Node* z) {
+	// RB-Insert-Fixup(T, z)
+	while (z->parent->color == Node::RED) {
+		if (z->parent == z->parent->parent->left) {
+			Node* y = z->parent->parent->right;
+			if (y->color == Node::RED) {
+				z->parent->color = Node::BLACK; // Fall 1
+				y->color = Node::BLACK; // Fall 1
+				z->parent->parent->color = Node::RED; // Fall 1
+				z = z->parent->parent; // Fall 1
+			} else {
+				if (z == z->parent->right) {
+					z = z->parent; // Fall 2
+					rotateLeft(z); // Fall 2
+				}
+				z->parent->color = Node::BLACK; // Fall 3
+				z->parent->parent->color = Node::RED; // Fall 3
+				rotateRight(z->parent->parent); // Fall 3
+			}
+		} else { // (analog zum then-Fall, nur “right” und “left” vertauschen)
+			if (z->parent == z->parent->parent->right) {
+				Node* y = z->parent->parent->left;
+				if (y->color == Node::RED) {
+					z->parent->color = Node::BLACK; // Fall 1
+					y->color = Node::BLACK; // Fall 1
+					z->parent->parent->color = Node::RED; // Fall 1
+					z = z->parent->parent; // Fall 1
+				} else {
+					if (z == z->parent->left) {
+						z = z->parent; // Fall 2
+						rotateRight(z); // Fall 2
+					}
+					z->parent->color = Node::BLACK; // Fall 3
+					z->parent->parent->color = Node::RED; // Fall 3
+					rotateLeft(z->parent->parent); // Fall 3
+				}
+			}
+		}
+	}
+	root->color = Node::BLACK;
+}
 
 // template<typename T>
 // void SearchTree<T>::deleteNode(Node *const node) {

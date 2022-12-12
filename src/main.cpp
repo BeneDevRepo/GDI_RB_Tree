@@ -34,14 +34,14 @@ int main(int argc, char** argv) {
 		// std::cout << "Tree:\n";
 		// tree.print();
 
-		std::cout << "Rotate Left around 5:\n";
-		tree.rotateLeft(tree.search(5));
-		std::cout << "Tree: " << tree << "\n"; // erwartet: 2, 3, 4, <5>, 7, 8, 9, 10,
-		// tree.print();
+		// std::cout << "Rotate Left around 5:\n";
+		// tree.rotateLeft(tree.search(5));
+		// std::cout << "Tree: " << tree << "\n"; // erwartet: 2, 3, 4, <5>, 7, 8, 9, 10,
+		// // tree.print();
 
-		std::cout << "Rotate Left around 7:\n";
-		tree.rotateLeft(tree.search(7));
-		std::cout << "Tree: " << tree << "\n"; // erwartet: 2, 3, 4, <5>, 7, 8, 9, 10,
+		// std::cout << "Rotate Left around 7:\n";
+		// tree.rotateLeft(tree.search(7));
+		// std::cout << "Tree: " << tree << "\n"; // erwartet: 2, 3, 4, <5>, 7, 8, 9, 10,
 		// tree.print();
 
 		// Suchen:

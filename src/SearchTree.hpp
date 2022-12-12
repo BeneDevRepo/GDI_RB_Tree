@@ -16,6 +16,11 @@ public:
 	TreeNode* left = nullptr;
 	TreeNode* right = nullptr;
 
+	enum Color {
+		RED,
+		BLACK
+	} color;
+
 public:
 	const T key;
 
@@ -97,7 +102,9 @@ private:
 
 public:
 	void rotateLeft(Node* x);
+	void rotateRight(Node* x);
 	void insert(const T key);
+	void insertFixup(Node* z);
 	// void deleteNode(Node *const node); // "const Node *const node" nicht zulaessig, da node sonst nicht korrekt geloescht werden koennte
 	Node* search(const T key);
 
