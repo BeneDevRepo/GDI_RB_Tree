@@ -20,7 +20,7 @@ public:
 	const T key;
 
 public:
-	TreeNode(const T rootKey) : key(rootKey) {}
+	TreeNode(const T key = -1) : key(key) {}
 	virtual ~TreeNode() {
 		if(left != this)
 			delete left;
@@ -35,11 +35,10 @@ public:
 	TreeNode& operator=(TreeNode&& moveFrom) = delete;
 
 public:
-	void rotateLeft();
-	TreeNode* minimum();
-	TreeNode* maximum();
-	TreeNode* predecessor();
-	TreeNode* successor();
+	// TreeNode* minimum();
+	// TreeNode* maximum();
+	// TreeNode* predecessor();
+	// TreeNode* successor();
 
 public:
 	// optional, aber praktisch zum debuggen:
@@ -51,25 +50,25 @@ public:
 		return cout;
 	}
 
-	bool isValid() const {
-		if(left != nullptr) {
-			if(left->parent != this)
-				return false;
+	// inline bool isValid() const {
+	// 	if(left != nullptr) {
+	// 		if(left->parent != this)
+	// 			return false;
 			
-			if(!left->isValid())
-				return false;
-		}
+	// 		if(!left->isValid())
+	// 			return false;
+	// 	}
 
-		if(right != nullptr) {
-			if(right->parent != this)
-				return false;
+	// 	if(right != nullptr) {
+	// 		if(right->parent != this)
+	// 			return false;
 			
-			if(!right->isValid())
-				return false;
-		}
+	// 		if(!right->isValid())
+	// 			return false;
+	// 	}
 
-		return true;
-	}
+	// 	return true;
+	// }
 };
 
 
@@ -78,10 +77,11 @@ class SearchTree {
 	using Node = TreeNode<T>; // optional, Fuer uebersichtlichen Code
 
 private:
-	Node* root; // Wurzel (im Falle eines leeren Baumes: nullptr)
+	Node* nil; // NIL element (existiert immer, selbst bei leerem baum)
+	Node* root; // Wurzel (im Falle eines leeren Baumes: nil)
 
 public:
-	SearchTree(): root(nullptr) {	}
+	SearchTree(): nil(new Node) { root = nil; }
 	virtual ~SearchTree() {
 		delete root;
 	}
@@ -93,35 +93,48 @@ public:
 	SearchTree& operator=(SearchTree&& moveFrom) = delete;
 
 private:
-	void transplant(const Node *const nodeToReplace, Node *const replacementNode); // internally used by void delete_node(...)
+	// void transplant(const Node *const nodeToReplace, Node *const replacementNode); // internally used by void delete_node(...)
 
 public:
+	void rotateLeft(Node* x);
 	void insert(const T key);
-	void deleteNode(Node *const node); // "const Node *const node" nicht zulaessig, da node sonst nicht korrekt geloescht werden koennte
+	// void deleteNode(Node *const node); // "const Node *const node" nicht zulaessig, da node sonst nicht korrekt geloescht werden koennte
 	Node* search(const T key);
 
-	Node* minimum() { return root->minimum(); }
-	Node* maximum() { return root->maximum(); }
+	// Node* minimum() { return root->minimum(); }
+	// Node* maximum() { return root->maximum(); }
 
 public:
 	// optional, aber praktisch zum debuggen:
 	friend std::ostream& operator<<(std::ostream& cout, const SearchTree& tree) {
-		// cout << tree.root; // markiert rootNode nicht
-		cout << tree.root->left << "<" << tree.root->key << ">, " << tree.root->right; // markiert rootNode
+		const auto printSub = [&](const auto& printSub, const Node* node){
+			if(node == tree.nil) return;
+			cout << "(";
+			printSub(printSub, node->left);
+			// cout << " <- ";
+			cout << " ";
+			cout << node->key;
+			cout << " ";
+			// cout << " -> ";
+			printSub(printSub, node->right);
+			cout << ")";
+		};
+
+		printSub(printSub, tree.root); // markiert rootNode
 		return cout;
 	}
 
 	// preorder-print:
-	static void printSubtree(const Node* tree, const size_t depth) {
-		if(tree == nullptr) return;
+	void printSubtree(const Node* subTree, const size_t depth) const {
+		if(subTree == nil) return;
 
 		for(size_t i = 0; i < depth; i++)
 			std::cout << "  ";
-		std::cout << tree->key << "\n";
+		std::cout << subTree->key << "\n";
 
-		printSubtree(tree->right, depth + 1);
+		printSubtree(subTree->right, depth + 1);
 
-		printSubtree(tree->left, depth + 1);
+		printSubtree(subTree->left, depth + 1);
 	}
 
 	// preorder-print:
@@ -129,18 +142,18 @@ public:
 		printSubtree(root, 0);
 	}
 
-	bool isValid() const {
-		if(root == nullptr)
-			return true;
+	// bool isValid() const {
+	// 	if(root == nullptr)
+	// 		return true;
 
-		if(root->parent != nullptr)
-			return false;
+	// 	if(root->parent != nullptr)
+	// 		return false;
 
-		return root->isValid();
-	}
+	// 	return root->isValid();
+	// }
 
 	bool isEmpty() const {
-		return root == nullptr;
+		return root == nil;
 	}
 };
 
